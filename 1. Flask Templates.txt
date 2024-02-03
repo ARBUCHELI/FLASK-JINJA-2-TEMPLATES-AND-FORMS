@@ -119,15 +119,15 @@ def recipe(id):
 
 2. Rendering Templates
 ----------------------
-	Having routes return full web pages as strings is not a realistic way to build our site. Containing our HTML in files is the standard and more organized approach to structuring 
-	our web app.
+Having routes return full web pages as strings is not a realistic way to build our site. Containing our HTML in files is the standard and more organized approach to structuring 
+our web app.
 
-	To work with files, which we will call templates, we use the Flask function render_template(). Used in the return statement, this function takes a template file name as an 
-	argument and returns the content to send to the client. It uses the Jinja2 template engine to generate HTML using the template file as blueprint.
+To work with files, which we will call templates, we use the Flask function render_template(). Used in the return statement, this function takes a template file name as an 
+argument and returns the content to send to the client. It uses the Jinja2 template engine to generate HTML using the template file as blueprint.
 
 		return render_template("my_template.html")
 
-	To use render_template() in our routes we need to import it from the flask. A simple app with an index route would look like this.
+To use render_template() in our routes we need to import it from the flask. A simple app with an index route would look like this.
 
 		from flask import Flask, render_template
  
@@ -137,7 +137,42 @@ def recipe(id):
 		def index():
     			return render_template("index.html")
 
-	Inside the application directory render_template() looks for templates inside a directory called templates. All template files should be kept inside this directory.
+Inside the application directory render_template() looks for templates inside a directory called templates. All template files should be kept inside this directory.
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+First thing to do is familiarize yourself with the directory structure. You can open the file picker by clicking the folder icon on the top left of the code editor.
+
+Inside the templates directory open index.html. You’ll notice the HTML from the previous exercise is now in the file. Run the code when you’re ready.
+
+Checkpoint 2 Passed
+2.
+In the index route replace the empty string with render_template() to generate HTML from the index.html template.
+
+
+Hint
+Return render_template() with "index.html" as the parameter. Use the following syntax:
+
+return render_template("my_template.html")
+
+Checkpoint 3 Passed
+3.
+Along with index.html there is a recipe template called fried_egg.html. In the recipe route’s return statement replace the empty string with render_template() to generate the HTML from 
+fried_egg.html.
+
+When you run the code you can navigate the site between the 2 routes. The index HTML is the same as in the previous exercise except the HTML is contained in a file. The data in 
+fried_egg.html has been hard coded in the file for this exercise.
+
+Move on to the next exercise to see how we can start using variables to bring our data dynamically to our files.
+
+
+Hint
+Return render_template() with "fried_egg.html" as the parameter. Use the following syntax:
+
+return render_template("my_template.html")
+
 
 app.py
 ------
