@@ -1,0 +1,452 @@
+# FLASK FORMS
+-------------
+
+* Introduction
+--------------
+	An important role of websites is gathering information from the user. Whether a user is signing into their Codecademy account, ordering clothes online or leaving feedback for a 
+	company, web forms have provided a simple way to enter and submit data over the internet.
+
+	The use of forms in a site can be an involved process. The designer must gather the right information, display the fields in a pleasing manner and ensure the data is collected 
+	correctly. Over the years this has become easier thanks to frameworks like Flask, which help streamline the process of displaying fields and gathering data.
+
+	This lesson assumes a foundational knowledge of web forms and the steps involved in sending the data to the web server. In the following exercises we are going to look at how 
+	Flask can help gather data from regular web forms as well as create forms in an entirely new way.
+
+	Instructions
+	------------
+	To help us learn about forms we will be using a cookbook app that lists recipes on a main page and links to individual recipe pages.
+
+		. The main Flask app is contained in app.py and has three routes: index, recipe and about. The index route has method POST added to handle form submission.
+
+		. The file helper.py contains the mock data for the app and has two functions, add_ingredients() and add_instructions() to help populate the data.
+
+		. The main web page is rendered from the template index.html. There is a title, list of recipes and a new recipe form. The form has fields for the recipe name, description, 
+		ingredients and instructions.
+
+		. The other template is recipe.html which renders each individual recipe using the mock data.
+
+	Review the site structure and head to the next exercise when you’re ready.
+
+==================================================================================================================================================================
+
+* Flask Request Object
+----------------------
+	Every time a client communicates with a server it does so through a request. By default our Flask routes only support GET requests. These are requests for data such as what to 
+	display in a browser window. When submitting a form through a website, the form data is sent as a POST request. This type of request wants to add data to the app. Routes can 
+	handle POST requests if it is specified in the methods argument of the route() decorator.
+
+		@app.route("/", methods=["GET", "POST"])
+
+	The code above shows a route that now supports both GET and POST requests. By default methods is set to [“GET”]. When adding “POST” to a route’s methods, be sure to include “GET” 
+	if you plan for the route to handle those requests as well.
+
+	Flask provides access to the data in the request through the request object. Importing the request object allows us to access everything about the requests to our app including 
+	form data and the request method such as GET or POST.
+
+		from flask import request
+
+	When data is sent via a form submission it can be accessed using the form attribute of the request object. The form attribute is a dictionary with the form’s field names as the 
+	keys and the associated data as the values. For example, if a text input had the name "my_text", then the data access would look like this.
+
+		text_in_field = request.form["my_text"]
+
+	1.
+	Before we begin with the form data, there are a few additions in the index() function to note regarding the gathering of form data:
+
+		. The variable new_id is assigned an integer that’s one more than the length of the recipes dictionary we imported form helper.py. This variable will be used as the key for the new recipe 
+		data.
+
+		. The if len(request.form) > 0 statement makes sure there is data in the form object before trying to access them. Without this, a KeyError would be raised when the route is accessed and 
+		the form is not submitted.
+
+	Review the changes and run the code when you are ready.
+
+==================================================================================================================================================================
+
+* Flask Request Object
+----------------------
+	Every time a client communicates with a server it does so through a request. By default our Flask routes only support GET requests. These are requests for data such as what to 
+	display in a browser window. When submitting a form through a website, the form data is sent as a POST request. This type of request wants to add data to the app. Routes can 
+	handle POST requests if it is specified in the methods argument of the route() decorator.
+
+		@app.route("/", methods=["GET", "POST"])
+
+	The code above shows a route that now supports both GET and POST requests. By default methods is set to [“GET”]. When adding “POST” to a route’s methods, be sure to include “GET” 
+	if you plan for the route to handle those requests as well.
+
+	Flask provides access to the data in the request through the request object. Importing the request object allows us to access everything about the requests to our app including 
+	form data and the request method such as GET or POST.
+
+		from flask import request
+
+	When data is sent via a form submission it can be accessed using the form attribute of the request object. The form attribute is a dictionary with the form’s field names as the 
+	keys and the associated data as the values. For example, if a text input had the name "my_text", then the data access would look like this.
+
+		text_in_field = request.form["my_text"]
+
+app.py
+------
+from flask import Flask, render_template, request --> (Update related to this section)
+from helper import recipes, descriptions, ingredients, instructions, add_ingredients, add_instructions
+
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+  new_id = len(recipes) + 1 --> (Update related to this section)
+  if len(request.form) > 0: --> (Update related to this section)
+    #### Add the recipe name to recipes[new_id] 
+    recipes[new_id] = request.form["recipe"] --> (Update related to this section)
+    #### Add the recipe description to descriptions[new_id]
+    descriptions[new_id] = request.form["description"] --> (Update related to this section)
+    #### Add the values to new_ingredients and new_instructions
+    new_ingredients = request.form["ingredients"] --> (Update related to this section)
+    new_instructions = request.form["instructions"] --> (Update related to this section)
+    add_ingredients(new_id, new_ingredients)
+    add_instructions(new_id, new_instructions)
+  return render_template("index.html", template_recipes=recipes)
+
+@app.route("/recipe/<int:id>")
+def recipe(id):
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id])
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+==================================================================================================================================================================
+
+* Route Selection
+-----------------
+	As sites get larger and their file structure becomes more complex the paths of Flask routes may change. In this case paths that are hard coded into the navigation elements such as 
+	hyperlinks and forms may break.
+
+	Flask addresses the challenge of expanding file structures with url_for(). The function url_for() takes a route’s function name as an argument and returns the associated URL path. 
+	Given the following Flask route declaration:
+
+		@app.route('/')
+		def index:
+
+	These two hyperlinks below are identical.
+
+		<a href="/">Index Link</a>
+ 
+		<a href="{{ url_for('index') }}">Index Link</a>
+
+	Breaking down the second line of above code, we can see a few things:
+
+		. url_for() is inside an expression delimiter
+
+		. the argument for url_for() is inside single quotes
+
+		. the entire statement is inside double quotes
+
+	Because of the last 2 points it is important to use one type of quotes for the whole statement and the other type of quotes for the url_for() argument.
+
+	To pass variables from the template to the app, keyword arguments can be added to url_for(). They will be sent as arguments attached to the URL. It can be accessed the same way as 
+	if it was added onto the path manually.
+
+		<a href="{{ url_for('my_page', id=1) }}">One</a>
+
+	This line creates a link that sends the value 1 to the route with the function name my_page. The route can access the variable through my_id.
+
+		@app.route("/my_path/<int:my_id>"), methods=["GET", "POST"])
+		def my_page(my_id):
+    			# Access flask_name in this function
+    			new_variable = my_id
+    			...
+
+==================================================================================================================================================================
+
+* FlaskForm Class
+-----------------
+	Flask provides an alternative to web forms by creating a form class in the application, implementing the fields in the template and handling the data back in the application.
+
+	A Flask form class inherits from the class FlaskForm and includes attributes for every field:
+
+	class MyForm(FlaskForm):
+   		 my_textfield = StringField("TextLabel")
+    		my_submit = SubmitField("SubmitName")
+	
+	This simple class will enable the creation of a form with a text field and a submit button.
+
+	The class inherits from the class FlaskForm which allows it to implement the form as template variables and then collect the data once submitted. FlaskForm is a part of FlaskWTF.
+
+	Access to the fields of this form class is done through the attributes, my_textfield and my_submit. The StringField and SubmitField classes are the same as <input type=text... and 
+	<input type=submit... respectively and are part of the WTForms library.
+
+	Below is a simple Flask app with the form class.
+
+		from flask import Flask, render_template
+		from flask_wtf import FlaskForm
+		from wtforms import StringField, SubmitField
+ 
+		app = Flask(__name__)
+		app.config["SECRET_KEY"] = "my_secret"
+ 
+		class MyForm(FlaskForm):
+    			my_textfield = StringField("TextLabel")
+    			my_submit = SubmitField("SubmitName")
+ 
+		@app.route("/")
+		def my_route():
+    			flask_form = MyForm()
+    			return render_template("my_template", template_form=flask_form)
+
+
+	First note the new import statements. FlaskForm is imported from the flask_wtf module and both form fields import from wtforms.
+
+	The next new line is:
+
+		app.config["SECRET_KEY"] = "my_secret"
+
+	This line is a way to protect against CSRF or Cross-Site Request Forgery. Without going into too much detail, CSRF is an attack that used to gain control of a web application.
+
+	Next is the MyForm class definition. It inherits from FlaskForm and has attributes for the text and submit fields. For each field the label is passed as the only argument.
+
+	Lastly, in order to use this form in our template, we must create an instance of it and pass it to the template using render_template(). We will look at applying the form in the 
+	template in the next exercise.
+
+app.py
+------
+from flask import Flask, render_template, request
+from helper import recipes, descriptions, ingredients, instructions, add_ingredients, add_instructions, comments
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "mysecret"
+
+#### Create form class here
+class CommentForm(FlaskForm):
+    comment = StringField("Comment")
+    submit = SubmitField("Add Comment")
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+  return render_template("index.html", template_recipes=recipes)
+
+@app.route("/recipe/<int:id>", methods=["GET", "POST"])
+def recipe(id):
+  #### Instantiate form class here
+  comment_form = CommentForm()
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], 
+	template_comments=comments[id], template_form=comment_form)
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+recipe.html
+-----------
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ template_recipe | title }}</h1>
+  
+  {% if template_description %}
+    <p>{{ template_description }}</p>
+  {%else%}
+    <p>A {{ template_recipe }} recipe.</p>
+  {% endif %}
+  
+  <h3>Ingredients - {{ template_ingredients | length}}</h3>
+  <ul>
+  {% for ingredient in template_ingredients %}
+    <li>{{ ingredient }}</li>
+  {% endfor %}
+  </ul>
+
+  <h3>Instructions</h3>
+  <ul>
+  {% for key, instruction in template_instructions|dictsort %}
+    <li>{{ instruction }}</li>
+  {% endfor %}
+  </ul>
+
+  <h3>Comments</h3>
+  <ul>
+  {% for comment in template_comments %}
+    <li>{{ comment }}</li>
+  {% endfor %}
+  </ul>
+{% endblock %}
+
+==================================================================================================================================================================
+
+* Template Form Variables
+-------------------------
+	Creating a form in the template is done by accessing attributes of the form passed to the template.
+
+	Let’s use the following form as we work toward implementing it in a template:
+
+		class MyForm(FlaskForm):
+    			my_textfield = StringField("TextLabel")
+    			my_submit = SubmitField("SubmitName")
+
+	In our application route we must instantiate the form and assign that instance to a template variable.
+
+		my_form = MyForm()
+ 
+		return render_template(template_form=my_form)
+
+	Moving to the template, creating a form we simply use the form class attributes as expressions.
+
+		<form action="/" method="post">
+    			{{ template_form.hidden_tag() }}
+    			{{ template_form.my_textfield.label }}
+    			{{ template_form.my_textfield() }}
+    			{{ template_form.my_submit() }}
+		</form>
+
+	Inside the standard <form> are all the FlaskForm objects accessed through template_form.
+
+	The first line {{ template_form.hidden_tag() }} is the other end of the CSRF protection. While not visible in the form, this field handles the necessary tasks to protect from CSRF.
+
+	The next two lines are for the text box. The first accesses the label of the field, which we specified as an argument when we created the field. The second my_textfield line is 
+	the input field itself.
+
+	The last line of the form is the submit button. Just like the HTML version, this will initiate sending the form data back to the server.
+
+	The HTML created from this form implementation is as follows:
+
+		<form action="/" method="post">
+    			<input id="csrf_token" name="csrf_token" type="hidden" value="ImI1YzIxZjUwZWMxNDg0ZDFiODAyZTY5M2U5MGU3MTg2OThkMTJkZjQi.XupI5Q.9HOwqyn3g2pveEHtJMijTu955NU">
+    			<label for="my_textfield">TextLabel</label>
+    			<input id="my_textfield" name="my_textfield" type="text" value="">
+    			<input id="my_submit" name="my_submit" type="submit" value="SubmitName">
+		</form>
+
+recipe.html
+-----------
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ template_recipe | title }}</h1>
+  {% if template_description %}
+    <p>{{ template_description }}</p>
+  {%else%}
+    <p>A {{ template_recipe }} recipe.</p>
+  {% endif %}
+  <h3>Ingredients - {{ template_ingredients | length}}</h3>
+  <ul>
+  {% for ingredient in template_ingredients %}
+      <li>{{ ingredient }}</li>
+  {% endfor %}
+  </ul>
+  <h3>Instructions</h3>
+  <ul>
+  {% for key, instruction in template_instructions|dictsort %}
+      <li>{{ instruction }}</li>
+  {% endfor %}
+  </ul>
+  <h3>Comments</h3>
+  <ul>
+  {% for comment in template_comments %}
+    <li>{{ comment }}</li>
+  {% endfor %}
+  </ul>
+  <form method="POST">
+  {{ template_form.hidden_tag() }}
+  <!-- Insert StringField elements here -->  
+  {{ template_form.comment.label }}
+  {{ template_form.comment() }}
+  <!-- Insert SubmitField element here -->
+  {{ template_form.submit() }}
+  </form>
+{% endblock %}
+
+==================================================================================================================================================================
+
+* Handling FlaskForm Data
+-------------------------
+	Once a form is submitted, the data is sent back to the server through a POST request. Previously we covered accessing this data through the request object provided by Flask.
+
+	Using our FlaskForm class, data is now accessible through the form instance in the Flask app. The data can be directly accessed by using the data attribute associated with each 
+	field in the class.
+
+		form_data = flask_form.my_textfield.data
+
+	Keeping all the information and functionality attached to the form object has streamlined the form creation and data gathering process.
+
+	Remember that when a route handles a form it is necessary to add the POST method to the route decorator.
+
+		methods=["GET", "POST"]
+
+==================================================================================================================================================================
+
+* Validation
+------------
+	In order to submit a form, it is common that certain required text fields must have data, date fields need to have a specific format, or a checkbox agreeing to certain terms needs 
+	to be checked.
+
+	Validation is when form fields must contain data or a certain format of data in order to move forward with submission. We enable validation in our form class using the validators 
+	parameter in the form field definitions.
+
+	Validators come from the wtform.validators module. Importing the DataRequired() validator is accomplished like this:
+
+		from wtforms.validators import DataRequired
+
+	The DataRequired() validator simply requires a field to have something in it before the form is submitted. Notifying the user that data is required is handled automatically.
+
+		my_textfield = StringField("TextLabel", validators=[DataRequired()])
+
+	The validators argument takes a list of validator instances.
+
+	The FlaskForm class also provides a method called validate_on_submit(), which we can used in our route to check for a valid form submission.
+
+		if my_form.validate_on_submit():
+    			# get form data
+
+	As we saw in the second exercise pertaining to the request object, in order to avoid gathering data on first access to the route we had to put the data gathering code inside an if 
+	statement. The validate_on_submit() function does this exact task.
+
+	The validate_on_submit() function returns True when there is a POST request and all the associated form validators are satisfied. At this point, the data can be gathered and 
+	processed. When the function returns False the route function can move on to other tasks such as rendering the template.
+
+app.py
+------
+from flask import Flask, render_template, request
+from helper import recipes, descriptions, ingredients, instructions, add_ingredients, add_instructions, comments
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+#### Note the new import statement
+from wtforms.validators import DataRequired
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "mysecret"
+
+class CommentForm(FlaskForm):
+  #### Add a validator argument in the StringField
+  comment =  StringField("Comment", validators=[DataRequired()])
+  submit = SubmitField("Add Comment")
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+  return render_template("index.html", template_recipes=recipes)
+
+@app.route("/recipe/<int:id>", methods=["GET", "POST"])
+def recipe(id):
+  comment_form = CommentForm(csrf_enabled=False)
+  #### Replace 'True' with form validation
+  if comment_form.validate_on_submit():
+    new_comment = comment_form.comment.data
+    comments[id].append(new_comment)
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+==================================================================================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
