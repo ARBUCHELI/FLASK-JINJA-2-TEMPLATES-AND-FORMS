@@ -667,12 +667,12 @@ index.html
 
 6. For Loops
 ------------
-	Repetitive tasks are standard in most computer applications and template rendering is no different. Creating lists, tables or a group of images are all repetitive tasks that can 
-	be solved using for loops.
+Repetitive tasks are standard in most computer applications and template rendering is no different. Creating lists, tables or a group of images are all repetitive tasks that can 
+be solved using for loops.
 
-	Using the same statement delimiter block as if statements {% %}, for loops step through a range of numbers, lists and dictionaries.
+Using the same statement delimiter block as if statements {% %}, for loops step through a range of numbers, lists and dictionaries.
 
-	The following code will create an ordered list where each line will output the index of the sequence:
+The following code will create an ordered list where each line will output the index of the sequence:
 
 		<ol>
 			{% for x in range(3) %}
@@ -685,12 +685,12 @@ index.html
 		2. 1
 		3. 2
 
-	The syntax is similar to a Python for loop where we define a loop variable x to step through a series of numbers using range(3). The local loop variable can be used inside our 
-	loop with the expression delimiter {{x}}.
+The syntax is similar to a Python for loop where we define a loop variable x to step through a series of numbers using range(3). The local loop variable can be used inside our 
+loop with the expression delimiter {{x}}.
 
-	Similar to the if statements we need to close the loop with an {%endfor%} block.
+Similar to the if statements we need to close the loop with an {%endfor%} block.
 
-	The following are a few more applications of a for loop.
+The following are a few more applications of a for loop.
 
 	. Iterate through a list variable:
 		{% for element in template_list %}
@@ -705,6 +705,109 @@ index.html
 		{% for key, value in template_dict.items() %}
 
 	Using the filter dictsort in a loop outputs the key/value pairs just like items()
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+Loops can help create lists based on the length of the data we have to work with.
+
+In recipe.html the ingredients section now has one <li> element. Apply a for loop to create an HTML list based on the Python list template_ingredients.
+
+Note the variable name ingredient to be used as the loop variable.
+
+
+Hint
+Apply the for loop using ingredient as the local loop variable and template_ingredients as the iterable. Use the following syntax.
+
+{% for local_var in iterable %}
+<li> ... </li>
+{% endfor %}
+
+Checkpoint 2 Passed
+2.
+In the instructions section, remember that we are using the dictsort filter on template_instructions. When used in a for loop dictsort will give you access to both the key and value of 
+the dictionary.
+
+Using the key and instruction variables create a simple string inside the <p> tag. The output should resemble something like this:
+
+Step 1: Put the bread in the toaster
+
+
+Hint
+Use two delimiters next to each other with key and instruction in each.
+
+<p>{{ delimiter 1 }}: {{ delimiter 2 }}</p>
+
+Checkpoint 3 Passed
+3.
+Now let’s move to index.html and support the expansion of our recipe list. The dictionary of ids and recipes names is now accessible in the template through the variable template_recipes.
+
+Create a for loop around the hyperlink and iterate through template_recipes.items(). Name the key and value loop variables id and name respectively.
+
+
+Hint
+Create id and name as the local loop variables and use template_recipes.items() as the iterable. Use the following syntax.
+
+{% for local_var1, local_var2 in iterable %}
+  <p><a href="/recipe/"></a></p>
+{% endfor %}
+
+Checkpoint 4 Passed
+4.
+Use the id and name variables to complete the hyperlink URL and the display string.
+
+Once the code is run you can now add recipes to the application data and automatically get a link on the index page that connects to a custom recipe page.
+
+
+Hint
+Add {{ id }} to the end of the URL string and place {{ name }} in between the <a> tags.
+
+recipe.html
+-----------
+<!DOCTYPE html>
+<html>
+  <body>
+    <a href="/">Back To Recipe List</a>
+    <h1>{{ template_recipe | title }}</h1>
+    {% if template_description %}
+      <p>{{ template_description }}</p>
+    {%else%}
+      <p>A {{ template_recipe }} recipe.</p>
+    {% endif %}
+    <h3>Ingredients - {{ template_ingredients | length}}</h3>
+    <ul>
+      <!-- Implement a for loop to iterate through 
+      `template_ingredients`-->
+      {% for ingredient in template_ingredients %}
+
+      <li>{{ ingredient }}</li> 
+      {% endfor %}
+    </ul>
+    <h3>Instructions</h3>
+    <ul>
+    {% for key, instruction in template_instructions|dictsort %}
+      <!-- Add the correct dictionary element to list 
+      the instructions -->
+      <p>{{ key }}: {{instruction}}</p>
+    {% endfor %}
+    </ul>
+  </body>
+</html>
+
+index.html
+----------
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Cooking By Myself</h1>
+    <p>Welcome to my cookbook. These are recipes I like.</p>
+    <!-- Implement a for loop using `template_recipes`-->
+    {% for id, name in template_recipes.items()%}
+    <p><a href="/recipe/{{ id }}">{{ name }}</a></p>
+    {% endfor %}
+  </body>
+</html>
 
 ==================================================================================================================================================================
 
