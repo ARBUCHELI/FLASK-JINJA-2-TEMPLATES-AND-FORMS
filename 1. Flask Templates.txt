@@ -499,32 +499,32 @@ def recipe(id):
 
 5. If Statements
 ----------------
-	Including conditionals such as if and if/else statements in our templates allows us to control how data is handled.
+Including conditionals such as if and if/else statements in our templates allows us to control how data is handled.
 
-	Let’s say we have a string variable passed to our template. When the variable contains an empty string will you want to output it or will you want to output another string? 
-	Remember the default filter doesn’t work in this situation so an if statement is needed.
+Let’s say we have a string variable passed to our template. When the variable contains an empty string will you want to output it or will you want to output another string? 
+Remember the default filter doesn’t work in this situation so an if statement is needed.
 
-	Using if statements in a template happens inside a statement delimiter block: {% %}.
+Using if statements in a template happens inside a statement delimiter block: {% %}.
 
 		{% if condition %}
   			<p>This text will output if condition is True</p> 
 		{% endif %}
 
-	Notice the {% endif %} delimiter is necessary to close the if statement.
+Notice the {% endif %} delimiter is necessary to close the if statement.
 
-	The condition can include a variable that is tested using standard comparison operators, <, >, <=, >=, ==, !=.
+The condition can include a variable that is tested using standard comparison operators, <, >, <=, >=, ==, !=.
 
 		{% if template_variable == "Hello" %}
   			<p>{{template_variable}}, World!</p> 
 		{% endif %}
 
-	While inside statement delimiters {% %} we can access variables without using the usual expression delimiter {{ }}.
+While inside statement delimiters {% %} we can access variables without using the usual expression delimiter {{ }}.
 
-	Variables can also be tested on their own. A variable defined as None or False or equates to 0 or contains an empty sequence such as "" or [] will test as False.
+Variables can also be tested on their own. A variable defined as None or False or equates to 0 or contains an empty sequence such as "" or [] will test as False.
 
-	The {% else %} and {% elif %} delimiters can be included to create multi-branch if statements.
+The {% else %} and {% elif %} delimiters can be included to create multi-branch if statements.
 
-	Given the assignment template_number = 20.
+Given the assignment template_number = 20.
 
 		{% if template_number < 20 %}
   			<p>{{ template_number }} is less than 20.</p> 
@@ -538,6 +538,130 @@ OUTPUT
 20 is equal to 20.
 
 	As expected the {% else %} branch is the one that is followed.
+
+* Instructions
+--------------
+1.
+Let’s note the few changes made to our app:
+
+	. The recipe list has expanded to 2 recipes.
+
+	. The new recipe has a description of None which doesn’t engage the default filter.
+
+	. The list of ingredients is set up for 3 ingredients, but the new recipe only has 2.
+
+With these points in mind run the code to explore the app and move on when you are ready.
+
+
+Hint
+Move to the next instruction.
+
+Checkpoint 2 Passed
+2.
+In recipe.html we have 2 paragraphs for our description. We want one paragraph to output template_description and the other to output a default statement.
+
+Start by surrounding BOTH paragraphs with an if statement that tests the variable on its own.
+
+Remember testing a variable on its own will be False if it is an empty string or is NoneType.
+
+When you run the code you will see that the recipe with a description displays both paragraphs while the recipe with no description displays nothing.
+
+
+Hint
+Use template_description as the condition using the following syntax.
+
+{% if condition %}
+  <p> ... </p>
+
+  <p> ... </p>
+{% endif %}
+
+Checkpoint 3 Passed
+3.
+Now separate the two paragraphs with an else statement.
+
+This will now display only one message per recipe: template_description or a default message.
+
+
+Hint
+Insert {% else %} between the two paragraphs.
+
+Checkpoint 4 Passed
+4.
+Now let’s use an if statement to fix the blank 3rd bullet in the list when displaying the new recipe.
+
+In the Ingredients section surround the 3rd ingredient <li> line with an if statement. For the condition, test that the length of template_ingredients is equal, ==, to 3.
+
+After completing this think about how limiting this task is. What if we have an ingredients list greater than 3? What if there’s only one ingredient? Run the code and move to the next exercise to find the answer.
+
+
+Hint
+Use template_ingredients | length == 3 as the condition using the following syntax.
+
+{% if condition %}
+  <li> ... </li>
+{% endif %}
+
+recipe.html
+-----------
+<!DOCTYPE html>
+<html>
+  <body>
+    <a href="/">Back To Recipe List</a>
+    <h1>{{ template_recipe | title }}</h1>
+    <!-- Insert description if statement here -->
+    
+    {% if template_description %}
+      <p>{{ template_description }}</p>
+    <!-- Include else here -->
+    {% else %}
+    <p>A {{ template_recipe }} recipe.</p>
+    <!-- Be sure to close with an endif block -->
+    {% endif %}
+    
+    <h3>Ingredients - {{ template_ingredients | length}}</h3>
+    <ul>
+      <li>{{ template_ingredients[0] }}</li>
+      <li>{{ template_ingredients[1] }}</li>
+      <!-- Insert ingredient if statement -->
+      {% if template_ingredients | length == 3 %}
+      <li>{{ template_ingredients[2] }}</li>
+      <!-- Be sure to close with an endif block -->
+      {% endif %}
+    </ul>
+    <h3>Instructions</h3>
+    <ol>
+      <li>{{ template_instructions | dictsort }}</li>
+    </ol>
+  </body>
+</html>
+
+app.py
+------
+from flask import Flask, render_template
+from helper import recipes, descriptions, ingredients, instructions
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+  return render_template("index.html")
+
+@app.route("/recipe/<int:id>")
+def recipe(id):
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id])
+
+index.html
+----------
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Cooking By Myself</h1>
+    <p>Welcome to my cookbook. These are recipes I like.</p>
+    <p><a href="/recipe/1">Fried Egg</a></p>
+    <p><a href="/recipe/2">Buttered Toast</a></p>
+  </body>
+</html>
 
 ==================================================================================================================================================================
 
