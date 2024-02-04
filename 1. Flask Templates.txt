@@ -1002,7 +1002,7 @@ recipe.html
 
 Review
 ------
-	Congratulations, this concludes the lesson on Flask templates. In this lesson we:
+Congratulations, this concludes the lesson on Flask templates. In this lesson we:
 
 		. Created a file structure that works with the Jinja2 template engine
 
@@ -1018,7 +1018,91 @@ Review
 
 		. Moved common content to separate files to be shared by many templates
 
-	To show the power of what we have learned let’s add a simple navigation bar to the app.
+To show the power of what we have learned let’s add a simple navigation bar to the app.
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+Things added to our app are:
+
+	. an “about” route in app.py
+
+	. an about.html template inheriting from base.html
+
+	. the ‘Back To Recipe List’ link has been removed from recipe.html
+
+Let’s create a navigation bar that will link to the about page and the index page. In base.html add the following content just inside the <body> tag.
+
+<div>
+  <a href="/">Recipes</a>
+   | 
+  <a href="/about">About</a>
+</div>
+
+Once complete run the code and you’ll see that each page in the site now has a simple navigation bar including the new ‘About’ page.
+
+Great work!
+
+
+Hint
+Paste the following code just inside the opening <body> tag.
+
+<div>
+  <a href="/">Recipes</a>
+   | 
+  <a href="/about">About</a>
+</div>
+
+base.html
+---------
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- Insert navigation bar HTML below -->
+
+    {% block content %}
+    <div>
+      <a href="/">Recipes</a>
+      |
+      <a href="/about">About</a>
+    </div>
+    {% endblock %}
+  </body>
+</html>
+
+app.py
+------
+from flask import Flask, render_template
+from helper import recipes, descriptions, ingredients, instructions
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+  return render_template("index.html", template_recipes=recipes)
+
+@app.route('/about')
+def about():
+  return render_template("about.html")
+
+@app.route("/recipe/<int:id>")
+def recipe(id):
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id])
+
+about.html
+----------
+{% extends "base.html" %}
+{% block content %}
+  <h1>About Myself</h1>
+  <p>
+    I like to cook, save recipes and share them with you.
+  </p>
+  <p>
+    Thank you for visiting!!!
+  </p>
+{% endblock %}
+
 
 ==================================================================================================================================================================
 
