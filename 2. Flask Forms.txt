@@ -3,18 +3,20 @@
 
 * Introduction
 --------------
-	An important role of websites is gathering information from the user. Whether a user is signing into their Codecademy account, ordering clothes online or leaving feedback for a 
-	company, web forms have provided a simple way to enter and submit data over the internet.
+An important role of websites is gathering information from the user. Whether a user is signing into their Codecademy account, ordering clothes online or leaving feedback for a 
+company, web forms have provided a simple way to enter and submit data over the internet.
 
-	The use of forms in a site can be an involved process. The designer must gather the right information, display the fields in a pleasing manner and ensure the data is collected 
-	correctly. Over the years this has become easier thanks to frameworks like Flask, which help streamline the process of displaying fields and gathering data.
+The use of forms in a site can be an involved process. 
 
-	This lesson assumes a foundational knowledge of web forms and the steps involved in sending the data to the web server. In the following exercises we are going to look at how 
-	Flask can help gather data from regular web forms as well as create forms in an entirely new way.
+The designer must gather the right information, display the fields in a pleasing manner and ensure the data is collected 
+correctly. Over the years this has become easier thanks to frameworks like Flask, which help streamline the process of displaying fields and gathering data.
 
-	Instructions
-	------------
-	To help us learn about forms we will be using a cookbook app that lists recipes on a main page and links to individual recipe pages.
+This lesson assumes a foundational knowledge of web forms and the steps involved in sending the data to the web server. In the following exercises we are going to look at how 
+Flask can help gather data from regular web forms as well as create forms in an entirely new way.
+
+* Instructions
+--------------
+To help us learn about forms we will be using a cookbook app that lists recipes on a main page and links to individual recipe pages.
 
 		. The main Flask app is contained in app.py and has three routes: index, recipe and about. The index route has method POST added to handle form submission.
 
@@ -26,6 +28,38 @@
 		. The other template is recipe.html which renders each individual recipe using the mock data.
 
 	Review the site structure and head to the next exercise when you’re ready.
+
+index.html
+----------
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cooking By Myself</h1>
+  <p>Welcome to my cookbook. These are recipes I like.</p>
+  {% for id, name in template_recipes.items() %}
+    <p><a href="/recipe/{{ id }}">{{ name }}</a></p>
+  {% endfor %}
+
+  <form action="/" method="POST">
+    <h3>Add Recipe</h3>
+    <p>
+      <label for="recipe">Name:</label>
+      <input type="text" name="recipe"/>
+    </p>
+    <p>
+      <label for="description">Description:</label>
+      <textarea name="description"></textarea>
+    </p>
+    <p>
+      <label for="ingredients">Ingredients:</label>
+      <textarea name="ingredients"></textarea>
+    </p>
+    <p>
+      <label for="instructions">Instructions:</label>
+      <textarea name="instructions"></textarea>
+    </p>
+    <p><input type="submit" name="submit_recipe"/></p>
+  </form>
+{% endblock %}
 
 ==================================================================================================================================================================
 
