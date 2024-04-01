@@ -105,7 +105,110 @@ def add_instructions(recipe_id=None, text=None):
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+* Flask Request Object
+----------------------
+19 min
+Every time a client communicates with a server it does so through a request. By default our Flask routes only support GET requests. These are requests for data such as what to display in 
+a browser window. When submitting a form through a website, the form data is sent as a POST request. This type of request wants to add data to the app. Routes can handle POST requests if 
+it is specified in the methods argument of the route() decorator.
 
+@app.route("/", methods=["GET", "POST"])
+
+The code above shows a route that now supports both GET and POST requests. By default methods is set to [“GET”]. When adding “POST” to a route’s methods, be sure to include “GET” if you 
+plan for the route to handle those requests as well.
+
+Flask provides access to the data in the request through the request object. Importing the request object allows us to access everything about the requests to our app including form data 
+and the request method such as GET or POST.
+
+from flask import request
+
+When data is sent via a form submission it can be accessed using the form attribute of the request object. The form attribute is a dictionary with the form’s field names as the keys and 
+the associated data as the values. For example, if a text input had the name "my_text", then the data access would look like this.
+
+text_in_field = request.form["my_text"]
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+Before we begin with the form data, there are a few additions in the index() function to note regarding the gathering of form data:
+
+	1. The variable new_id is assigned an integer that’s one more than the length of the recipes dictionary we imported form helper.py. This variable will be used as the key for the 
+	new recipe data.
+
+	2. The if len(request.form) > 0 statement makes sure there is data in the form object before trying to access them. Without this, a KeyError would be raised when the route is 
+	accessed and the form is not submitted.
+
+Review the changes and run the code when you are ready.
+
+Checkpoint 2 Passed
+2.
+In app.py, note the request object has been added to the import section.
+
+Working in the index route and using the request object, assign the contents of the form’s "recipe" text field to recipes[new_id].
+
+After you run the code feel free to try out your work by refreshing the browser. Keep in mind that not all data is processed yet so clicking on the new recipe links will raise a KeyError.
+
+
+Hint
+Assign data in the field named "recipe" to recipes[new_id] using the following syntax.
+
+some_var = request.form[field_name]
+
+Checkpoint 3 Passed
+3.
+Repeat the same step for the description form data by assigning the description field data to descriptions[new_id].
+
+
+Hint
+Assign data in the field named "description" to descriptions[new_id] using the following syntax.
+
+some_var = request.form[field_name]
+
+Checkpoint 4 Passed
+4.
+The helper functions add_ingredients() and add_instructions() are set up to add the contents of the variables new_ingredients and new_instructions to the data. Currently both variables 
+are set to None.
+
+Put the form data named "ingredients" and "instructions" into the appropriate variables so the data is added to the app.
+
+
+Hint
+Assign data in the field named "ingredients" to new_ingredients and the data in the field named "instructions" to new_instructions using the following syntax.
+
+some_var = request.form[field_name]
+
+app.py
+------
+from flask import Flask, render_template, request
+from helper import recipes, descriptions, ingredients, instructions, add_ingredients, add_instructions
+
+app = Flask(__name__)
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+  new_id = len(recipes) + 1
+  if len(request.form) > 0:
+    #### Add the recipe name to recipes[new_id] 
+    recipes[new_id] = request.form["recipe"]
+    #### Add the recipe description to descriptions[new_id]
+    descriptions[new_id] = request.form["description"]
+    #### Add the values to new_ingredients and new_instructions
+    new_ingredients = request.form["ingredients"]
+    new_instructions = request.form["instructions"]
+    add_ingredients(new_id, new_ingredients)
+    add_instructions(new_id, new_instructions)
+  return render_template("index.html", template_recipes=recipes)
+
+@app.route("/recipe/<int:id>")
+def recipe(id):
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id])
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
