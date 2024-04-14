@@ -210,6 +210,200 @@ def about():
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+* Route Selection
+-----------------
+15 min
+As sites get larger and their file structure becomes more complex the paths of Flask routes may change. In this case paths that are hard coded into the navigation elements such as 
+hyperlinks and forms may break.
+
+Flask addresses the challenge of expanding file structures with url_for(). The function url_for() takes a route’s function name as an argument and returns the associated URL path. Given 
+the following Flask route declaration:
+
+@app.route('/')
+def index:
+
+These two hyperlinks below are identical.
+
+<a href="/">Index Link</a>
+
+<a href="{{ url_for('index') }}">Index Link</a>
+
+Breaking down the second line of above code, we can see a few things:
+
+	. url_for() is inside an expression delimiter
+
+	. the argument for url_for() is inside single quotes
+
+	. the entire statement is inside double quotes
+
+Because of the last 2 points it is important to use one type of quotes for the whole statement and the other type of quotes for the url_for() argument.
+
+To pass variables from the template to the app, keyword arguments can be added to url_for(). They will be sent as arguments attached to the URL. It can be accessed the same way as if it 
+was added onto the path manually.
+
+<a href="{{ url_for('my_page', id=1) }}">One</a>
+
+This line creates a link that sends the value 1 to the route with the function name my_page. The route can access the variable through my_id.
+
+@app.route("/my_path/<int:my_id>"), methods=["GET", "POST"])
+def my_page(my_id):
+    # Access flask_name in this function
+    new_variable = my_id
+    ...
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+Let’s look at replacing the URL strings in the navigation bar with url_for().
+
+In base.html replace / with url_for() in the href attribute of the Recipes link. For the argument use the "index" route function name.
+
+Remember to use the double curly brackets when using url_for().
+
+
+Hint
+Use 'index' as the only argument to url_for using the following syntax.
+
+<a href="{{ url_for(route_name) }}">
+
+Checkpoint 2 Passed
+2.
+Now replace the URL string in the “About” link with url_for() using the about route function name.
+
+
+Hint
+Use 'about' as the only argument to url_for using the following syntax.
+
+<a href="{{ url_for(route_name) }}">
+
+Checkpoint 3 Passed
+3.
+In index.html the recipe link href is blank. Remember that we want to go to the recipe route and pass the id variable.
+
+Insert url_for() into the blank href attribute passing the correct route function name as well as the id variable.
+
+
+Hint
+Use 'recipe' as the first argument and the keyword assignment id=id as the second to url_for using the following syntax.
+
+<a href="{{ url_for(route_name, flask_var=template_var) }}">
+
+base.html
+---------
+<!DOCTYPE html>
+<html>
+  <body>
+    <div>
+      <!-- Replace URL string with url_for -->
+      <a href="{{ url_for('index')}}">Recipes</a>
+      | 
+      <!-- Replace URL string with url_for -->
+      <a href="{{ url_for('about')}}">About</a>
+    </div>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
+
+index.html
+----------
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cooking By Myself</h1>
+  <p>Welcome to my cookbook. These are recipes I like.</p>
+  {% for id, name in template_recipes.items() %}
+    <!-- Use url_for to pass the id variable -->
+    <p><a href="{{url_for('recipe', id=id)}}">{{ name }}</a></p>
+  {% endfor %}
+
+  <form action="/" method="POST">
+    <h3>Add Recipe</h3>
+    <p>
+      <label for="recipe">Name:</label>
+      <input type="text" name="recipe"/>
+    </p>
+    <p>
+      <label for="description">Description:</label>
+      <textarea name="description"></textarea>
+    </p>
+    <p>
+      <label for="ingredients">Ingredients:</label>
+      <textarea name="ingredients"></textarea>
+    </p>
+    <p>
+      <label for="instructions">Instructions:</label>
+      <textarea name="instructions"></textarea>
+    </p>
+    <p><input type="submit" name="submit_recipe"/></p>
+  </form>
+{% endblock %}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
