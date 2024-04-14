@@ -21,4 +21,11 @@
     <li>{{ instruction }}</li>
   {% endfor %}
   </ul>
+
+  <h3>Comments</h3>
+  <ul>
+  {% for comment in template_comments %}
+    <li>{{ comment }}</li>
+  {% endfor %}
+  </ul>
 {% endblock %}
