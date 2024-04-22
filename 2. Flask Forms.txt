@@ -85,8 +85,10 @@ recipes = {1: "fried egg", 2: "buttered toast"}
 types = {1: "Breakfast", 2: "Breakfast"}
 descriptions = {1: "Egg fried in butter", 2: "Toasted bread spread with butter"}
 ingredients = {1: ["1 pad of butter", "1 Egg", "A pinch of salt"], 2: ["1 pad of salted butter", "1 slice of bread"]}
-instructions = {1: {"Step 2": "Crack the egg into the buttered pan", "Step 5": "Serve egg after about a minute and a half", "Step 1": "Melt butter in pan over medium-low heat", "Step 4": "Flip egg after about a minute and a half", "Step 3": "Sprinke the pinch of salt onto cooking egg",},
-                2: {"Step 3": "Put the pad of butter on the toasted bread", "Step 4": "After a minute spread the melted butter onto the bread", "Step 1": "Put the bread in the toaster", "Step 2": "Take the toast out of the toaster"}}
+instructions = {1: {"Step 2": "Crack the egg into the buttered pan", "Step 5": "Serve egg after about a minute and a half", "Step 1": "Melt butter in pan over medium-low heat", 
+		"Step 4": "Flip egg after about a minute and a half", "Step 3": "Sprinke the pinch of salt onto cooking egg",},
+                2: {"Step 3": "Put the pad of butter on the toasted bread", "Step 4": "After a minute spread the melted butter onto the bread", "Step 1": "Put the bread in the toaster", 
+		"Step 2": "Take the toast out of the toaster"}}
 comments = {1: ["Yummy!!", "Egg-cellent ;->"], 2: ["Toasty", "What a great recipe!"]}
 
 def add_ingredients(recipe_id=None, text=None):
@@ -659,13 +661,119 @@ def index():
 @app.route("/recipe/<int:id>", methods=["GET", "POST"])
 def recipe(id):
   comment_form = CommentForm()
-  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], 
+  template_comments=comments[id], template_form=comment_form)
 
 @app.route("/about")
 def about():
   return render_template("about.html")
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Handling FlaskForm Data
+-------------------------
+9 min
+Once a form is submitted, the data is sent back to the server through a POST request. Previously we covered accessing this data through the request object provided by Flask.
+
+Using our FlaskForm class, data is now accessible through the form instance in the Flask app. The data can be directly accessed by using the data attribute associated with each field in 
+the class.
+
+form_data = flask_form.my_textfield.data
+
+Keeping all the information and functionality attached to the form object has streamlined the form creation and data gathering process.
+
+Remember that when a route handles a form it is necessary to add the POST method to the route decorator.
+
+methods=["GET", "POST"]
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+The data from the web form can now be accessed through the comment_form instance within the recipe route. In that route in app.py assign the comment field data to a variable called 
+new_comment.
+
+
+Hint
+Assign comment_form.comment.data to new_comment using this syntax.
+
+some_var = some_instance.some_field.data
+
+Checkpoint 2 Passed
+2.
+Now add the submitted comment to the specified recipe comment list by appending new_comment to comments[id].
+
+When you’re done, give the form a try by adding some comments to the recipe page. Head on to the next exercise when ready.
+
+
+Hint
+Using .append() add new_comment to the comments[id] list using this syntax.
+
+some_list.append(some_var)
+
+app.py
+------
+from flask import Flask, render_template, request
+from helper import recipes, descriptions, ingredients, instructions, add_ingredients, add_instructions, comments
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "mysecret"
+
+class CommentForm(FlaskForm):
+  comment =  StringField("Comment")
+  submit = SubmitField("Add Comment")
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+  return render_template("index.html", template_recipes=recipes)
+
+@app.route("/recipe/<int:id>", methods=["GET", "POST"])
+def recipe(id):
+  comment_form = CommentForm()
+  #### Process data here
+  new_comment = comment_form.comment.data
+  comments[id].append(new_comment)
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], 
+  template_comments=comments[id], template_form=comment_form)
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
