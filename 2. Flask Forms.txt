@@ -842,6 +842,337 @@ def about():
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+* More Form Fields
+------------------
+18 min
+We’ve now covered the operation cycle of forms using FlaskWTF. Now let’s look at some additional form fields included in WTForms.
+
+* TextAreaField
+---------------
+The TextAreaField is a text field that supports multi-line input. The data returned from a TextAreaField instance is a string that may include more whitespace characters such as newlines 
+or tabs.
+
+#### Form class declaration
+my_text_area = TextAreaField("Text Area Label")
+
+* BooleanField
+--------------
+A checkbox element is created using the BooleanField object. The data returned from a BooleanField instance is either True or False.
+
+#### Form class declaration
+my_checkbox = BooleanField("Checkbox Label")
+
+* RadioField
+------------
+A radio button group is created using the RadioField object. Since there are multiple buttons in this group, the instance declaration takes an argument for the group label and a keyword 
+argument choices which takes a list of tuples.
+
+Each tuple represents a button in the group and contains the button identifier string and the button label string.
+
+#### Form class declaration
+my_radio_group = RadioField("Radio Group Label", choices=[("id1", "One"), ("id2","Two"), ("id3","Three")])
+
+Since the RadioField() instance generally contains multiple buttons it is necessary to iterate through it to access the components of the subfields.
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+A common practice when creating web forms with Flask is to define the forms in a separate file and import them into the main app.
+
+	. CommentForm has been moved to the new file forms.py
+
+	. RecipeForm is fully functional and has been added to forms.py
+
+	. RadioField has been added to the wtforms import statement
+
+	. The list recipe_categories in RecipeForm holds the 3 radio button tuples.
+
+Run the code to move on.
+
+Checkpoint 2 Passed
+2.
+In forms.py create a radio field instance and assign it to recipe_type. The instance should have the label "Type" and recipe_categories should be assigned to the keyword argument choices.
+
+
+Hint
+Assign a RadioField instance to recipe_type. Be sure to pass the label "Type" as the first argument and choices=recipe_categories as the second argument. Use the following syntax.
+
+some_radio_group = RadioField(label_string, choices=choice_list)
+
+Checkpoint 3 Passed
+3.
+In index.html a table has been added to contain our radio buttons. Inside the for loop that iterates through the 3 buttons, use the loop variable btn to insert the button field in the 
+first <td> tag and the field label in the other <td> tag pair.
+
+
+Hint
+Add btn() to the first <td> statement and btn.label to the second <td> statement. Follow this syntax.
+
+<td>{{ radio_var() }}</td>
+<td>{{ radio_var.label }}</td>
+
+Checkpoint 4 Passed
+4.
+Lastly, in the index route of app.py add the recipe_type data from the form to types[new_id].
+
+When you’re done give the recipe form a try with the new radio buttons.
+
+
+Hint
+Assign recipe_form.recipe_type.data to types[new_id] using this syntax.
+
+some_var = some_instance.some_field.data
+
+forms.py
+--------
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, TextAreaField, RadioField
+from wtforms.validators import DataRequired
+
+class RecipeForm(FlaskForm):
+  recipe_categories = [("Breakfast","Breakfast"), ("Lunch","Lunch"), ("Dinner","Dinner")]
+  recipe = StringField("Recipe", validators=[DataRequired()])  
+  #### Add `recipe_type` and assign it a new radio field instance
+  recipe_type = RadioField("Type", choices=recipe_categories)
+  description = StringField("Description")
+  ingredients = TextAreaField("Ingredients")
+  instructions = TextAreaField("Instructions")
+  submit = SubmitField("Add Recipe")
+
+class CommentForm(FlaskForm):
+  comment = StringField("Comment", validators=[DataRequired()])
+  submit = SubmitField("Add Comment")
+
+index.html
+----------
+{% extends "base.html" %}
+{% block content %}
+  <h1>Cooking By Myself</h1>
+  <p>Welcome to my cookbook. These are recipes I like.</p>
+  {% for id, name in template_recipes.items() %}
+    <p><a href="{{ url_for('recipe', id=id) }}">{{ name }}</a></p>
+  {% endfor %}
+  <form action="/" method="POST">
+    {{ template_form.hidden_tag() }}
+    <p>{{ template_form.recipe.label }}
+    {{ template_form.recipe() }}</p>
+    <table><tr>
+      {% for btn in template_form.recipe_type %}
+      <!-- Put the button variable then the button label 
+      in the following td tags-->
+      <td>{{ btn() }}</td>
+      <td>{{ btn.label }}</td>
+    {% endfor %}
+    </tr></table>
+    <p>{{ template_form.description.label }}
+    {{ template_form.description() }}</p>
+    <p>{{ template_form.ingredients.label }}
+    {{ template_form.ingredients() }}</p>
+    <p>{{ template_form.instructions.label }}
+    {{ template_form.instructions() }}</p>
+    <p>{{ template_form.submit() }}</p>
+  </form>
+{% endblock %}
+
+app.py
+------
+from flask import Flask, render_template, request
+from helper import recipes, types, descriptions, ingredients, instructions, add_ingredients, add_instructions, comments
+from forms import RecipeForm, CommentForm
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "mysecret"
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+  recipe_form = RecipeForm(csrf_enabled=False)
+  if recipe_form.validate_on_submit():
+    new_id = len(recipes)+1
+    recipes[new_id] = recipe_form.recipe.data
+    #### Add type data here
+    types[new_id] = recipe_form.recipe_type.data
+    descriptions[new_id] = recipe_form.description.data
+    new_ingredients = recipe_form.ingredients.data
+    new_instructions = recipe_form.instructions.data
+    add_ingredients(new_id, new_ingredients)
+    add_instructions(new_id, new_instructions)
+    comments[new_id] = []
+  return render_template("index.html", template_recipes=recipes, template_form=recipe_form)
+
+@app.route("/recipe/<int:id>", methods=["GET", "POST"])
+def recipe(id):
+  comment_form = CommentForm(csrf_enabled=False)
+  if comment_form.validate_on_submit():
+    new_comment = comment_form.comment.data
+    comments[id].append(new_comment)
+  return render_template("recipe.html", template_recipe=recipes[id], template_type=types[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+
+@app.route("/about")
+def about():
+  return render_template("about.html")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+* Redirecting
+-------------
+11 min
+Besides rendering templates from our routes, it can be important to move from one route to another. This is the role of the function redirect().
+
+Consider the case where we create our form in one route, but after the form submission we want the user to end up in another route. While we can set the action attribute in the HTML 
+<form> tag go to any path, redirect() is the best option to move from one route to another.
+
+redirect("url_string")
+
+Using this function inside another route will simply send us to the URL we specify. In the case of a form submission, we can use redirect() after we have processed and saved our data 
+inside our validate_on_submit() check.
+
+Why don’t we just render a different template after processing our form data? There are many reasons for this, one being that each route comes with its own business logic prior to 
+rendering its template. Rendering a template outside the initial route would mean you need to repeat some or all of this code.
+
+Once again, to avoid possible URL string pitfalls, we can utilize url_for() within redirect(). This allows us to navigate routes by specifying the route function name instead of the URL 
+path.
+
+redirect(url_for("new_route", _external=True, _scheme='https'))
+
+	. we must add two new keyword arguments to our call of url_for()
+
+	. the keyword arguments _external=True and _scheme='https' ensure that the URL we redirect to is a secure HTTPS address and not an insecure HTTP address
+
+Similarly, regular keyword arguments can be added if necessary.
+
+redirect(url_for("new_route", new_var=this_var, _external=True, _scheme='https'))
+
+* Instructions
+--------------
+Checkpoint 1 Passed
+1.
+Note the added flask imports: url_for and redirect. These will be used inside our route to change pages after the new recipe form submission.
+
+In the index route of app.py add a return statement still within if recipe_form.validate_on_submit():. Start by returning the path string we want to go to using url_for(). Use the 
+"recipe" route function as the main argument and set id to new_id as the keyword argument.
+
+Make sure to set and include the _external and _scheme keyword arguments to load an HTTPS URL.
+
+When submitting a recipe the browser should simply print the correct URL string for the added recipe.
+
+
+Hint
+The return statement should have url_for() with the "recipe" function name as the first argument and id=new_id as the second argument. Use the following syntax.
+
+return url_for("route_function_name", url_var=my_var, _external=True, _scheme='https')
+
+Checkpoint 2 Passed
+2.
+Now that the URL string is set, let’s add redirect() to the return statement and use the set url_for() as the argument.
+
+When complete, the form submission should change the page to the recipe that was just added. Good work!
+
+
+Hint
+Add redirect() to the return statement and use the existing url_for() function as the only argument. Use the following syntax.
+
+return redirect(url_for("route_function_name", url_var=my_var))
+
+app.py
+------
+from flask import Flask, render_template, request, redirect, url_for
+from helper import recipes, types, descriptions, ingredients, instructions, add_ingredients, add_instructions, comments
+from forms import RecipeForm, CommentForm
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'mysecret'
+
+@app.route('/', methods=["GET", "POST"])
+def index():
+  recipe_form = RecipeForm(csrf_enabled=False)
+  if recipe_form.validate_on_submit():
+    new_id = len(recipes)+1
+    recipes[new_id] = recipe_form.recipe.data
+    types[new_id] = recipe_form.recipe_type.data
+    descriptions[new_id] = recipe_form.description.data
+    new_igredients = recipe_form.ingredients.data
+    new_instructions = recipe_form.instructions.data
+    add_ingredients(new_id, new_igredients)
+    add_instructions(new_id, new_instructions)
+    comments[new_id] = []
+    #### Redirect to recipe route here
+    return redirect(url_for("recipe", id=new_id, _external=True, _scheme='https'))
+  return render_template("index.html", template_recipes=recipes, template_form=recipe_form)
+
+@app.route("/recipe/<int:id>", methods=["GET", "POST"])
+def recipe(id):
+  comment_form = CommentForm(csrf_enabled=False)
+  if comment_form.validate_on_submit():
+    new_comment = comment_form.comment.data
+    comments[id].append(new_comment)
+  return render_template("recipe.html", template_recipe=recipes[id], template_type=types[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+
+@app.route('/about')
+def about():
+  return render_template("about.html")
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
