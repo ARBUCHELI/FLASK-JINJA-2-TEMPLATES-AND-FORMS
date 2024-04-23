@@ -834,7 +834,8 @@ def recipe(id):
   if comment_form.validate_on_submit():
     new_comment = comment_form.comment.data
     comments[id].append(new_comment)
-  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+  return render_template("recipe.html", template_recipe=recipes[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], 
+template_comments=comments[id], template_form=comment_form)
 
 @app.route("/about")
 def about():
@@ -1006,7 +1007,8 @@ def recipe(id):
   if comment_form.validate_on_submit():
     new_comment = comment_form.comment.data
     comments[id].append(new_comment)
-  return render_template("recipe.html", template_recipe=recipes[id], template_type=types[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+  return render_template("recipe.html", template_recipe=recipes[id], template_type=types[id], template_description=descriptions[id], template_ingredients=ingredients[id], 
+template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
 
 @app.route("/about")
 def about():
@@ -1106,7 +1108,8 @@ def recipe(id):
   if comment_form.validate_on_submit():
     new_comment = comment_form.comment.data
     comments[id].append(new_comment)
-  return render_template("recipe.html", template_recipe=recipes[id], template_type=types[id], template_description=descriptions[id], template_ingredients=ingredients[id], template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
+  return render_template("recipe.html", template_recipe=recipes[id], template_type=types[id], template_description=descriptions[id], template_ingredients=ingredients[id], 
+template_instructions=instructions[id], template_comments=comments[id], template_form=comment_form)
 
 @app.route('/about')
 def about():
@@ -1114,7 +1117,30 @@ def about():
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+* Review
+--------
+1 min
+In this lesson we learned:
 
+	. How to access form data using the request object
+
+	. Control path selection with route function names using url_for()
+
+	. Create a web form structure using FlaskForm and WTForm fields
+
+	. Create a web form in the templates using FlaskForm variables
+
+	. Utilize field validators for increased data integrity
+
+	. Use redirect() to change paths easily within the app
+
+Being able to utilize Python classes to handle forms is a very efficient process. Organizing form data using the functionality of FlaskWTF and WTForms can be easily achieved.
+
+Navigate through the site and review the files to look at what you accomplished in this lesson.
+
+* Instructions
+--------------
+Great Work! Explore the app and move on when ready.
 
 
 
