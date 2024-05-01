@@ -1,34 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>{{ template_recipe | title }}</h1>
+  <h1 style="font-family: Courier New; font-size: 2em; font-weight: bold; color: #6A5ACD;">{{ template_recipe | title }}</h1>
   
   {% if template_description %}
-    <p>{{ template_description }}</p>
+    <p style="font-family: Courier New; font-size: 1em; color: #034f84;">{{ template_description }}</p>
   {%else%}
     <p>A {{ template_recipe }} recipe.</p>
   {% endif %}
   
-  <h3>Ingredients - {{ template_ingredients | length}}</h3>
-  <ul>
+  <h3 style="font-family: Courier New; font-size: 1.5em; color: #c94c4c; font-weight: bold;">Ingredients - {{ template_ingredients | length}}</h3>
+  <ul style="font-family: Courier New; font-size: 1em; color: #034f84;">
   {% for ingredient in template_ingredients %}
     <li>{{ ingredient }}</li>
   {% endfor %}
   </ul>
 
-  <h3>Instructions</h3>
-  <ul>
+  <h3 style="font-family: Courier New; font-size: 1.5em; color: #c94c4c; font-weight: bold;">Instructions</h3>
+  <ul style="font-family: Courier New; font-size: 1em; color: #034f84;">
   {% for key, instruction in template_instructions|dictsort %}
     <li>{{ instruction }}</li>
   {% endfor %}
   </ul>
 
-  <h3>Comments</h3>
-  <ul>
+  <h3 style="font-family: Courier New; font-size: 1.5em; color: #c94c4c; font-weight: bold;">Comments</h3>
+  <ul style="font-family: Courier New; font-size: 1em; color: #034f84;">
   {% for comment in template_comments %}
     <li>{{ comment }}</li>
   {% endfor %}
   </ul>
-  <form method="POST">
+  <form method="POST" style="font-family: Courier New; font-size: 1em; color: #034f84;">
     {{ template_form.hidden_tag() }}
     <!-- Insert StringField elements here -->  
     {{ template_form.comment.label }}

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html style="background-color: #ffcc5c; margin-top: 1em;">
   <body>
     <div>
       <!-- Replace URL string with url_for -->
-      <a href="{{ url_for('index')}}">Recipes</a>
+      <a href="{{ url_for('index')}}" style="font-family: Courier New; font-size: 1em;">Recipes</a>
       | 
       <!-- Replace URL string with url_for -->
-      <a href="{{ url_for('about')}}">About</a>
+      <a href="{{ url_for('about')}}" style="font-family: Courier New; font-size: 1em;">About</a>
     </div>
     {% block content %}
     {% endblock %}

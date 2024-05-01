@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>Cooking By Myself</h1>
-  <p>Welcome to my cookbook. These are recipes I like.</p>
+  <img style=" display: block; margin-left: auto; margin-right: auto; border-radius: 5px; border: 1px solid #c94c4c" src="https://raw.githubusercontent.com/ARBUCHELI/FLASK-COOKING-APP-FOR-EXPERIMENTS/master/123721-OQEG19-362.jpg" alt="Adopt a Pet" width="150" height="150">
+  <h1 style="font-family: Courier New; font-size: 2em; font-weight: bold; text-align: center; color: #6A5ACD;">Cooking By Myself</h1>
+  <p style="font-family: Courier New; font-size: 1.5em; color: #c94c4c; font-weight: bold; text-align: center;">Welcome to my cookbook. These are recipes I like.</p>
   {% for id, name in template_recipes.items() %}
-    <p><a href="{{ url_for('recipe', id=id) }}">{{ name }}</a></p>
+    <p style="font-family: Courier New; font-size: 1em;"><a href="{{ url_for('recipe', id=id) }}">{{ name }}</a></p>
   {% endfor %}
   <form action="/" method="POST">
     {{ template_form.hidden_tag() }}
-    <p>{{ template_form.recipe.label }}
+    <p style="font-family: Courier New; font-size: 1em; color: #034f84;">{{ template_form.recipe.label }}
     {{ template_form.recipe() }}</p>
-    <table><tr>
+    <table style="font-family: Courier New; font-size: 1em; color: #034f84;"><tr>
       {% for btn in template_form.recipe_type %}
       <!-- Put the button variable then the button label 
       in the following td tags-->
@@ -17,11 +18,11 @@
       <td>{{ btn.label }}</td>
     {% endfor %}
     </tr></table>
-    <p>{{ template_form.description.label }}
+    <p style="font-family: Courier New; font-size: 1em; color: #034f84;">{{ template_form.description.label }}
     {{ template_form.description() }}</p>
-    <p>{{ template_form.ingredients.label }}
+    <p style="font-family: Courier New; font-size: 1em; color: #034f84;">{{ template_form.ingredients.label }}
     {{ template_form.ingredients() }}</p>
-    <p>{{ template_form.instructions.label }}
+    <p style="font-family: Courier New; font-size: 1em; color: #034f84;">{{ template_form.instructions.label }}
     {{ template_form.instructions() }}</p>
     <p>{{ template_form.submit() }}</p>
   </form>
