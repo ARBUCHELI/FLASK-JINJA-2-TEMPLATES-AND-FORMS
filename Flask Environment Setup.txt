@@ -1,0 +1,76 @@
+# FLASK ENVIRONMENT SETUP
+-------------------------
+
+* How to Build Flask Apps Locally
+---------------------------------
+
+* Virtual Environment
+---------------------
+Isolated environment on our computer where we can control all of the different dependencies and the versions of those dependencies so that they can interact with our flask app.
+
+1) python3 -m venv myapp
+
+2) lib --> Folder that contains all of the different dependencies.
+
+3) bin --> Folder that contains executable scripts.
+
+4) source bin/activate --> Command for activating the virtual environment. (mac)
+
+5) Scripts\activate.bat
+
+6) pip install flask
+
+7) pip install flask_wtf
+
+* MINIMALISTIC APP WITH EVERYTHING STUDIED IN THIS COURSE
+---------------------------------------------------------
+
+app.py
+------
+from flask import Flask, render_template, request
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'mysecret'
+
+todos = ["Learn Flask", "Setup venv", "Build a cool app"]
+
+class TodoForm(FlaskForm):
+    todo = StringField("Todo")
+    submit = SubmitField("Add todo")
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if 'todo' in request.form:
+        todos.append(request.form['todo'])
+    return render_template('index.html', todos=todos, template_form=TodoForm())
+
+
+index.html
+----------
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Todos</h1>
+    {% for todo in todos %}
+        <li>{{ todo }}</li>
+    {% endfor %}
+
+    <form method="POST">
+        {{ template_form.hidden_tag() }}
+        <p>
+            {{ template_form.todo.label }}
+            {{ template_form.todo()}}
+        </p>
+        <p>{{ template_form.submit() }}</p>
+    </form>
+</body>
+</html>
+
+
+
